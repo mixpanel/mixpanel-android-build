@@ -1,0 +1,18 @@
+apply plugin: 'android-library'
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion "21.1.2"
+
+    defaultConfig {
+         minSdkVersion 9
+        targetSdkVersion 21
+        testApplicationId "com.mixpanel.android.mpmetrics"
+        testInstrumentationRunner "android.test.InstrumentationTestRunner"
+
+        lintOptions {
+            abortOnError true
+            warningsAsErrors true
+        }
+    }
+}
