@@ -16,3 +16,11 @@ android {
         }
     }
 }
+
+repositories {
+    mavenLocal()
+}
+
+dependencies {
+    compile 'com.mixpanel.android:mixpanel-android:4.5.4-SNAPSHOT@aar'
+}
