@@ -18,6 +18,10 @@ import javax.tools.Diagnostic;
 
 @SupportedAnnotationTypes("com.mixpanel.android.build.Tweak")
 public class TweaksAnnotationProcessor extends AbstractProcessor {
+
+    // TODO REQUIRED CHECKS
+    //
+
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         Set<? extends Element> elements = roundEnv.getElementsAnnotatedWith(Tweak.class);
@@ -28,7 +32,7 @@ public class TweaksAnnotationProcessor extends AbstractProcessor {
 
         }
 
-        return false; // TODO this should be true if we're only passed Tweak annotations
+        return false; // TODO this should be true if we're only passed Tweak annotations?
     }
 
     private void processTweakableElement(Element el) {
@@ -48,14 +52,10 @@ public class TweaksAnnotationProcessor extends AbstractProcessor {
             }
         }
 
-        // Do we need to know the type of the method? Could you just catch a runtime ClassCastException here instead?
-        // Edge case like this
-        //
-        // @Tweak
-        // public void sameName(String x);
-        //
-        // @Tweak
-        // public void sameName(double x);
+        // TODO REQUIRED CHECKS
+        // - TWEAK NAME + TYPE IS UNIQUE
+        // - THE TWEAK TYPE IS ASSIGNABLE from String, double, long, or boolean (Which means NOT A TYPE PARAMETER)
+
         System.out.println("OK WITH TWEAKABLE ELEMENT " + el);
     }
 }
