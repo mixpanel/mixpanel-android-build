@@ -33,25 +33,6 @@ public class TweaksFunctionalTest extends AndroidTestCase {
         assertEquals("A B C", subject.stringBanana);
     }
 
-    public void testUntweakedClasses() {
-        final Tweaks tweaks = new Tweaks(new SynchronousHandler(), "$$TWEAK_REGISTRAR");
-        final Object ob = new Object();
-        try {
-            tweaks.registerForTweaks(ob);
-            fail("An untweakable object should throw an exception");
-        } catch (IllegalStateException e) {
-            // ok
-        }
-
-        final HashMap<String, Integer> m = new HashMap<String, Integer>();
-        try {
-            tweaks.registerForTweaks(m);
-            fail("An untweakable object should throw an exception");
-        } catch (IllegalStateException e) {
-            // ok
-        }
-    }
-
     public void testTweaksSuperclasses() {
         final TweakedObject tObj = new TweakedObject();
 
