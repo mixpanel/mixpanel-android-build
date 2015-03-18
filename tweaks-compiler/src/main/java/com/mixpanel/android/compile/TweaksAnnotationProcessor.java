@@ -25,15 +25,6 @@ public class TweaksAnnotationProcessor extends AbstractProcessor {
         final Set<? extends Element> elements = roundEnv.getElementsAnnotatedWith(Tweak.class);
         final Map<Name, Collection<AppliedTweak>> packageApplications = new HashMap<Name, Collection<AppliedTweak>>();
 
-        System.out.println("Tweaks Annotation Processor Running on Annotations on " + annotations.size() + " elements");
-        for (TypeElement elem:annotations) {
-            System.out.println("    annotated: " + elem);
-        }
-
-        for (Element elem:roundEnv.getRootElements()) {
-            System.out.println("    root: " + elem);
-        }
-
         try {
             for (Element el:elements) {
                 final AppliedTweak application = AppliedTweak.readTweakApplication(processingEnv.getTypeUtils(), processingEnv.getElementUtils(), el);
@@ -48,8 +39,6 @@ public class TweaksAnnotationProcessor extends AbstractProcessor {
         } catch (IllegalTweakException e) {
             processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, e.getMessage(), e.getElement());
         }
-
-        System.out.println("Found " + elements.size() + " => " + packageApplications.size() + " Annotations");
 
         final TweakClassWriter writer = new TweakClassWriter();
 

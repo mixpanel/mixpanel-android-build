@@ -2,7 +2,7 @@ package com.mixpanel.android.tweaksbuildtest;
 
 import com.mixpanel.android.build.Tweak;
 
-class TweakedObject {
+public class TweakedObject {
     @Tweak(name="bananas", defaultString="Default Value")
     public void setBananas(String bananas) {
         stringBanana = bananas;

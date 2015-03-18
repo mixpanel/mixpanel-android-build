@@ -72,9 +72,9 @@ public class AppliedTweak {
         {
             Element container = tweakedElement;
             while (null != container) {
-                container = container.getEnclosingElement();
-                if (container.getKind() == ElementKind.CLASS || container.getKind() == ElementKind.INTERFACE) {
-                    if (null != tweakedType) { // We tweak the innermost class or interface, but nesting is ok.
+                final ElementKind kind = container.getKind();
+                if (kind == ElementKind.CLASS || kind == ElementKind.INTERFACE) {
+                    if (null == tweakedType) { // We tweak the innermost class or interface, but nesting is ok.
                         tweakedType = (TypeElement) container;
                     }
 
@@ -86,6 +86,8 @@ public class AppliedTweak {
                 if (container.getKind() == ElementKind.PACKAGE) {
                     tweakedPackage = (PackageElement) container; // nested packages are impossible, so we should find at most one of these.
                 }
+
+                container = container.getEnclosingElement();
             }
         }
 
