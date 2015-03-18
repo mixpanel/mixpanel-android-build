@@ -59,6 +59,7 @@ public class TweaksAnnotationProcessor extends AbstractProcessor {
 
             Writer writer = null;
             try {
+                // TODO hard coding '$$TWEAK_REGISTRAR' everywhere is gross
                 final JavaFileObject file = filer.createSourceFile(name.toString() + ".$$TWEAK_REGISTRAR", elementArgs);
                 writer = file.openWriter();
                 writer.write(classContents);

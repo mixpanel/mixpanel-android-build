@@ -61,6 +61,8 @@ public class TweakClassFormatter {
 
     private static final String CLASS_FOOTER =
         "    } // registerObjectForTweaks\n" +
+        "\n" +
+        "    public static final $$TWEAK_REGISTRAR INSTANCE = new $$TWEAK_REGISTRAR();\n" +
         "} // class\n";
 
 }

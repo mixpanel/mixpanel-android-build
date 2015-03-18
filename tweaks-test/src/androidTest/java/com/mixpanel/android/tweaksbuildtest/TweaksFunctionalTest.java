@@ -3,9 +3,7 @@ package com.mixpanel.android.tweaksbuildtest;
 import android.test.AndroidTestCase;
 
 import com.mixpanel.android.mpmetrics.Tweaks;
-import com.mixpanel.android.tweaksbuildtest.ManualTweakClass; // TODO this won't work!
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 
 public class TweaksFunctionalTest extends AndroidTestCase {
