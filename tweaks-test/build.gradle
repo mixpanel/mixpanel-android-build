@@ -1,4 +1,14 @@
 evaluationDependsOn(':tweaks')
+evaluationDependsOn(':tweaks-compiler')
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.2+'
+    }
+}
 
 apply plugin: 'android-library'
 
@@ -23,7 +33,22 @@ repositories {
     mavenLocal()
 }
 
+android.libraryVariants.all { variant ->
+    // TODO This should be a gradle plugin
+    variant.javaCompile.options.compilerArgs += [
+            '-processor', 'com.mixpanel.android.compile.TweaksAnnotationProcessor'
+    ]
+}
+
+android.testVariants.all { variant ->
+    // TODO This should be a gradle plugin
+    variant.javaCompile.options.compilerArgs += [
+            '-processor', 'com.mixpanel.android.compile.TweaksAnnotationProcessor'
+    ]
+}
+
 dependencies {
     compile 'com.mixpanel.android:mixpanel-android:4.5.4-SNAPSHOT@aar'
-    compile project(':tweaks') // TODO should be testCompile
+    compile project(':tweaks')
+    provided project(':tweaks-compiler')
 }

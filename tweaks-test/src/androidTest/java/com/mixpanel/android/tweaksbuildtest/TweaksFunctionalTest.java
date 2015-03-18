@@ -2,9 +2,10 @@ package com.mixpanel.android.tweaksbuildtest;
 
 import android.test.AndroidTestCase;
 
-import com.mixpanel.android.build.Tweak;
 import com.mixpanel.android.mpmetrics.Tweaks;
+import com.mixpanel.android.tweaksbuildtest.ManualTweakClass; // TODO this won't work!
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 
 public class TweaksFunctionalTest extends AndroidTestCase {
@@ -12,9 +13,9 @@ public class TweaksFunctionalTest extends AndroidTestCase {
         assertTrue(true);
     }
 
-    public void testManualTweaksCode() {
+    public void testManualTweaksCode() throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
         final ManuallyTweakedObject subject = new ManuallyTweakedObject();
-        final Tweaks tweaks = new Tweaks(new SynchronousHandler());
+        final Tweaks tweaks = new Tweaks(new SynchronousHandler(), "ManualTweakClass");
         tweaks.registerForTweaks(subject);
 
         assertEquals("Default Value", subject.tweakedString);
@@ -25,7 +26,7 @@ public class TweaksFunctionalTest extends AndroidTestCase {
 
     public void testTweakResults() {
         final TweakedObject subject = new TweakedObject();
-        final Tweaks tweaks = new Tweaks(new SynchronousHandler());
+        final Tweaks tweaks = new Tweaks(new SynchronousHandler(), "$$TWEAK_REGISTRAR");
         tweaks.registerForTweaks(subject);
 
         assertEquals("Default Value", subject.stringBanana);
@@ -39,7 +40,7 @@ public class TweaksFunctionalTest extends AndroidTestCase {
     }
 
     public void testUntweakedClasses() {
-        final Tweaks tweaks = new Tweaks(new SynchronousHandler());
+        final Tweaks tweaks = new Tweaks(new SynchronousHandler(), "$$TWEAK_REGISTRAR");
         final Object ob = new Object();
         try {
             tweaks.registerForTweaks(ob);
@@ -55,5 +56,14 @@ public class TweaksFunctionalTest extends AndroidTestCase {
         } catch (IllegalStateException e) {
             // ok
         }
+    }
+
+    public void testTweaksInMultipleSuperclasses() {
+        fail("Need to test C extends B extends A with tweaks on B and A classes");
+    }
+
+    public void testMultipleTweaksOnTheSameClass() {
+        fail("Need to resolve what the deal is with Tweaked A.setX and B.setX when both have separate tweaks");
+
     }
 }
