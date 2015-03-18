@@ -14,7 +14,7 @@ public class TweakClassFormatter {
         ret.append(header);
 
         for (final AppliedTweak application:appliedTweaks) {
-            final Tweak tweak = application.getTweak();
+            final AppliedTweak.TweakInfo tweak = application.getTweak();
             final AppliedTweak.ParameterType parameterType = application.getParameterType();
             final String block = String.format(
                     CLASS_BODY_TEMPLATE,
@@ -44,7 +44,7 @@ public class TweakClassFormatter {
         "\n";
 
     private static final String CLASS_BODY_TEMPLATE =
-        "        {\n" +
+        "        if (registrant instanceof %1$s) {\n" + // TWEAKED CLASS
         "            final String tweakName = \"%2$s\";\n" + // TWEAK NAME
         "            final %4$s tweakDefault = %3$s;\n" + // PARAM TYPE, TWEAKED DEFAULT VALUE AS LEGAL JAVA LITERAL
         "\n" +

@@ -1,5 +1,6 @@
 package com.mixpanel.android.compile;
 
+import com.mixpanel.android.build.BooleanDefault;
 import com.mixpanel.android.build.Tweak;
 
 import java.io.IOException;
@@ -24,6 +25,11 @@ import javax.tools.JavaFileObject;
 @SupportedAnnotationTypes({"*"})
 public class TweaksAnnotationProcessor extends AbstractProcessor {
 
+    public TweaksAnnotationProcessor() {
+        super();
+        mTweakApplier = new TweakApplier();
+    }
+
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         final Set<? extends Element> elements = roundEnv.getElementsAnnotatedWith(Tweak.class);
@@ -31,7 +37,11 @@ public class TweaksAnnotationProcessor extends AbstractProcessor {
 
         try {
             for (Element el:elements) {
-                final AppliedTweak application = AppliedTweak.readTweakApplication(processingEnv.getTypeUtils(), processingEnv.getElementUtils(), el);
+                final AppliedTweak application = mTweakApplier.readTweakApplication(
+                    processingEnv.getTypeUtils(),
+                    processingEnv.getElementUtils(),
+                    el
+                );
                 final Name packageName = application.getPackage().getQualifiedName();
                 if (!packageApplications.containsKey(packageName)) {
                     packageApplications.put(packageName, new ArrayList<AppliedTweak>());
@@ -83,4 +93,6 @@ public class TweaksAnnotationProcessor extends AbstractProcessor {
     public SourceVersion getSupportedSourceVersion() {
         return SourceVersion.latestSupported();
     }
+
+    private final TweakApplier mTweakApplier;
 }

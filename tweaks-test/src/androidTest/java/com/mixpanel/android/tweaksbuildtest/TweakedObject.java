@@ -1,27 +1,43 @@
 package com.mixpanel.android.tweaksbuildtest;
 
+import com.mixpanel.android.build.StringDefault;
 import com.mixpanel.android.build.Tweak;
 
 public class TweakedObject {
-    @Tweak(name="bananas", defaultString="Default Value")
+    @Tweak(name="bananas")
+    @StringDefault(value="Default Value")
     public void setBananas(String bananas) {
         stringBanana = bananas;
     }
 
-    @Tweak(name="bananas", defaultDouble=0.0)
-    public void setBananas(double bananas) {
-        doubleBanana = bananas;
-    }
-
     public String stringBanana = "Before Registration";
-    public double doubleBanana = -1.0;
 
-    public class Inner {
-        @Tweak(name="inner", defaultString="A String")
-        public void setInner(String s) {
-
+    public class InnerA {
+        @Tweak(name="parent")
+        @StringDefault("Parent Default")
+        public void setParent(String s) {
+            parentTweak = s + " at Parent";
         }
 
-        public String innerTweak = "Before Registration";
+        public void setChild(String s) {
+            childTweak = s + " at Parent";
+        }
+
+        public String parentTweak = "Before Registration";
+        public String childTweak = "Before Registration";
+    }
+
+    public class InnerB extends InnerA {
+        @Override
+        public void setParent(String s) {
+            parentTweak = s + " at Child";
+        }
+
+        @Tweak(name="child")
+        @StringDefault("Child Default")
+        @Override
+        public void setChild(String s) {
+            childTweak = s + " at Child";
+        }
     }
 }

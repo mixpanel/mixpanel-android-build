@@ -1,19 +1,8 @@
 package com.mixpanel.android.compile;
 
-import com.mixpanel.android.build.Tweak;
-
-import java.util.List;
-
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
 
 
 public class AppliedTweak {
@@ -21,8 +10,8 @@ public class AppliedTweak {
     public static enum ParameterType {
         BOOLEAN_TWEAK("bool") {
             @Override
-            public String getFormattedDefaultValue(Tweak t) {
-                return Boolean.toString(t.defaultBoolean());
+            public String getFormattedDefaultValue(TweakInfo t) {
+                return Boolean.toString(t.getDefaultBoolean());
             }
 
             @Override
@@ -32,8 +21,8 @@ public class AppliedTweak {
         },
         DOUBLE_TWEAK("double") {
             @Override
-            public String getFormattedDefaultValue(Tweak t) {
-                return Double.toString(t.defaultDouble());
+            public String getFormattedDefaultValue(TweakInfo t) {
+                return Double.toString(t.getDefaultDouble());
             }
 
             @Override
@@ -43,8 +32,8 @@ public class AppliedTweak {
         },
         LONG_TWEAK("long") {
             @Override
-            public String getFormattedDefaultValue(Tweak t) {
-                return Long.toString(t.defaultLong());
+            public String getFormattedDefaultValue(TweakInfo t) {
+                return Long.toString(t.getDefaultLong());
             }
 
             @Override
@@ -54,8 +43,8 @@ public class AppliedTweak {
         },
         STRING_TWEAK("String") {
             @Override
-            public String getFormattedDefaultValue(Tweak t) {
-                return JavaStringEscape.escape(t.defaultString());
+            public String getFormattedDefaultValue(TweakInfo t) {
+                return JavaStringEscape.escape(t.getDefaultString());
             }
 
             @Override
@@ -72,101 +61,50 @@ public class AppliedTweak {
             return mTypeName;
         }
 
-        public abstract String getFormattedDefaultValue(Tweak t);
+        public abstract String getFormattedDefaultValue(TweakInfo t);
         public abstract String getAccessorName();
 
         private final String mTypeName;
     }
 
-    public static AppliedTweak readTweakApplication(Types types, Elements elements, Element tweakedElement)
-        throws IllegalTweakException {
-        if (tweakedElement.getKind() != ElementKind.METHOD) {
-            throw new IllegalTweakException("Only methods can be tweaked (not) " + tweakedElement, tweakedElement);
+    public static class TweakInfo {
+        public TweakInfo(String tweakName, boolean defaultBoolean, double defaultDouble, long defaultLong, String defaultString) {
+            mName = tweakName;
+            mDefaultBoolean = defaultBoolean;
+            mDefaultDouble = defaultDouble;
+            mDefaultLong = defaultLong;
+            mDefaultString = defaultString;
         }
 
-        if (!tweakedElement.getModifiers().contains(Modifier.PUBLIC)) {
-            throw new IllegalTweakException("Only public methods may be Tweaked, " + tweakedElement + " is not public", tweakedElement);
+        public String name() {
+            return mName;
         }
 
-        final ExecutableElement tweakedMethod = (ExecutableElement) tweakedElement;
-        PackageElement tweakedPackage = null;
-        TypeElement tweakedType = null;
-        {
-            Element container = tweakedElement;
-            while (null != container) {
-                final ElementKind kind = container.getKind();
-                if (kind == ElementKind.CLASS || kind == ElementKind.INTERFACE) {
-                    if (null == tweakedType) { // We tweak the innermost class or interface, but nesting is ok.
-                        tweakedType = (TypeElement) container;
-                    }
-
-                    if(!container.getModifiers().contains(Modifier.PUBLIC)) {
-                        throw new IllegalTweakException("All classes or interfaces containing a tweak must be public (and " + container + " is not)", tweakedElement);
-                    }
-                }
-
-                if (container.getKind() == ElementKind.PACKAGE) {
-                    tweakedPackage = (PackageElement) container; // nested packages are impossible, so we should find at most one of these.
-                }
-
-                container = container.getEnclosingElement();
-            }
+        public boolean getDefaultBoolean() {
+            return mDefaultBoolean;
         }
 
-        if (null == tweakedPackage) {
-            throw new IllegalTweakException("Tweaked method " + tweakedElement + " does not appear to be part of any package, and default package tweaks are not currently supported.", tweakedElement);
+        public double getDefaultDouble() {
+            return mDefaultDouble;
         }
 
-        final List<? extends VariableElement> params = tweakedMethod.getParameters();
-        if (params.size() != 1) {
-            throw new IllegalTweakException("Tweaked method " + tweakedElement + " must take exactly one parameter", tweakedElement);
+        public long getDefaultLong() {
+            return mDefaultLong;
         }
 
-        if ("".equals(tweakedType)) {
-            throw new IllegalTweakException("Anonymous or Local classes cannot have tweaked methods. Tweak the method of a superclass or an interface", tweakedElement);
+        public String getDefaultString() {
+            return mDefaultString;
         }
 
-        final VariableElement param = params.get(0);
-        final TypeMirror intendedParamType = param.asType();
+        private final String mName;
+        private final boolean mDefaultBoolean;
+        private final double mDefaultDouble;
+        private final long mDefaultLong;
+        private final String mDefaultString;
 
-        // TODO inbound tweaks must NEVER BE NULL
-
-        final TypeMirror charSequenceType = elements.getTypeElement("java.lang.CharSequence").asType();
-        final TypeMirror doubleType = elements.getTypeElement("java.lang.Double").asType();
-        final TypeMirror booleanType = elements.getTypeElement("java.lang.Boolean").asType();
-        final TypeMirror longType = elements.getTypeElement("java.lang.Long").asType();
-
-        ParameterType tweakParameterType = null;
-        switch (intendedParamType.getKind()) {
-            case BOOLEAN:
-                tweakParameterType = ParameterType.BOOLEAN_TWEAK;
-                break;
-            case DOUBLE:
-                tweakParameterType = ParameterType.DOUBLE_TWEAK;
-                break;
-            case LONG:
-                tweakParameterType = ParameterType.LONG_TWEAK;
-                break;
-            case DECLARED:
-                if (types.isAssignable(intendedParamType, booleanType)) {
-                    tweakParameterType = ParameterType.BOOLEAN_TWEAK;
-                } else if (types.isAssignable(intendedParamType, doubleType)) {
-                    tweakParameterType = ParameterType.DOUBLE_TWEAK;
-                } else if (types.isAssignable(intendedParamType, longType)) {
-                    tweakParameterType = ParameterType.LONG_TWEAK;
-                } else if (types.isAssignable(intendedParamType, charSequenceType)) {
-                    tweakParameterType = ParameterType.STRING_TWEAK;
-                }
-                break;
-            default:
-                throw new IllegalTweakException("The parameter to a tweaked method " + tweakedElement + " must be String, Boolean, Double, or Long", tweakedElement);
-        }
-
-        final Tweak tweak = tweakedMethod.getAnnotation(Tweak.class);
-        return new AppliedTweak(tweak, tweakedMethod, tweakedType, tweakParameterType, tweakedPackage);
     }
 
-    public AppliedTweak(Tweak tweak, ExecutableElement tweakedMethod, TypeElement tweakedType, ParameterType paramType, PackageElement tweakedPackage) {
+    public AppliedTweak(TweakInfo tweak, ExecutableElement tweakedMethod, TypeElement tweakedType, ParameterType paramType, PackageElement tweakedPackage) {
         mTweak = tweak;
         mTweakedMethod = tweakedMethod;
         mTweakedType = tweakedType;
@@ -174,7 +112,7 @@ public class AppliedTweak {
         mTweakedPackage = tweakedPackage;
     }
 
-    public Tweak getTweak() {
+    public TweakInfo getTweak() {
         return mTweak;
     }
 
@@ -198,7 +136,7 @@ public class AppliedTweak {
         return mTweakedPackage;
     }
 
-    private final Tweak mTweak;
+    private final TweakInfo mTweak;
     private final ExecutableElement mTweakedMethod;
     private final TypeElement mTweakedType;
     private final ParameterType mParameterType;

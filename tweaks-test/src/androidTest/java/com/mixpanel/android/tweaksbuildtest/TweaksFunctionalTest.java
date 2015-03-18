@@ -28,12 +28,8 @@ public class TweaksFunctionalTest extends AndroidTestCase {
         tweaks.registerForTweaks(subject);
 
         assertEquals("Default Value", subject.stringBanana);
-        assertEquals(0.0, subject.doubleBanana);
 
-        tweaks.set("bananas", 2.3);
         tweaks.set("bananas", "A B C");
-
-        assertEquals(2.3, subject.doubleBanana);
         assertEquals("A B C", subject.stringBanana);
     }
 
@@ -56,12 +52,38 @@ public class TweaksFunctionalTest extends AndroidTestCase {
         }
     }
 
-    public void testTweaksInMultipleSuperclasses() {
-        fail("Need to test C extends B extends A with tweaks on B and A classes");
-    }
+    public void testTweaksSuperclasses() {
+        final TweakedObject tObj = new TweakedObject();
 
-    public void testMultipleTweaksOnTheSameClass() {
-        fail("Need to resolve what the deal is with Tweaked A.setX and B.setX when both have separate tweaks");
+        {
+            final TweakedObject.InnerB childSubject = tObj.new InnerB();
+            final Tweaks tweaks = new Tweaks(new SynchronousHandler(), "$$TWEAK_REGISTRAR");
+            tweaks.registerForTweaks(childSubject);
 
+            assertEquals("Parent Default at Child", childSubject.parentTweak);
+            assertEquals("Child Default at Child", childSubject.childTweak);
+
+            tweaks.set("parent", "Parent Set");
+            tweaks.set("child", "Child Set");
+
+            assertEquals("Parent Set at Child", childSubject.parentTweak);
+            assertEquals("Child Set at Child", childSubject.childTweak);
+        }
+
+        {
+            final TweakedObject.InnerA parentSubject = tObj.new InnerA();
+            final Tweaks tweaks = new Tweaks(new SynchronousHandler(), "$$TWEAK_REGISTRAR");
+            tweaks.registerForTweaks(parentSubject);
+
+            assertEquals("Parent Default at Parent", parentSubject.parentTweak);
+            assertEquals("Before Registration", parentSubject.childTweak);
+
+
+            tweaks.set("parent", "Parent Set");
+            tweaks.set("child", "Child Set");
+
+            assertEquals("Parent Set at Parent", parentSubject.parentTweak);
+            assertEquals("Before Registration", parentSubject.childTweak);
+        }
     }
 }

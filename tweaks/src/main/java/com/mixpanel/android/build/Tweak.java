@@ -10,8 +10,4 @@ import java.lang.annotation.Target;
 public @interface Tweak {
     // TODO - make name optional IF AND ONLY IF annotated method matches /^set([A-Z].*)/
     String name();
-    String defaultString() default "";
-    double defaultDouble() default 0.0;
-    long defaultLong() default 0;
-    boolean defaultBoolean() default false;
 }
