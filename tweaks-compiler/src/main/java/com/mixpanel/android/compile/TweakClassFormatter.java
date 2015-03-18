@@ -7,7 +7,7 @@ import java.util.Collection;
 import javax.lang.model.element.Name;
 
 
-public class TweakClassWriter {
+public class TweakClassFormatter {
     public String tweaksClassAsString(Name packageName, Collection<AppliedTweak> appliedTweaks) {
         final StringBuilder ret = new StringBuilder();
         final String header = String.format(CLASS_HEADER_TEMPLATE, packageName);
@@ -22,6 +22,7 @@ public class TweakClassWriter {
                     tweak.name(),
                     parameterType.getFormattedDefaultValue(tweak),
                     parameterType.getTypeName(),
+                    parameterType.getAccessorName(),
                     application.getTweakedMethod().getSimpleName()
             );
             ret.append(block);
@@ -45,14 +46,14 @@ public class TweakClassWriter {
     private static final String CLASS_BODY_TEMPLATE =
         "        {\n" +
         "            final String tweakName = \"%2$s\";\n" + // TWEAK NAME
-        "            final String tweakDefault = %3$s;\n" + // DEFAULT VALUE -- QUOTED OR WHATEVER
+        "            final %4$s tweakDefault = %3$s;\n" + // PARAM TYPE, TWEAKED DEFAULT VALUE AS LEGAL JAVA LITERAL
         "\n" +
         "            final %1$s typedRegistrant = (%1$s) registrant;\n" + // TWEAKED CLASS, TWEAKED CLASS
-        "            t.bind(TweakName, TweakDefault, new Tweaks.TweakChangeCallback() {\n" +
+        "            t.bind(tweakName, tweakDefault, new Tweaks.TweakChangeCallback() {\n" +
         "                @Override\n" +
         "                public void onChange(Object _ignored) {\n" +
-        "                    final %4$s tweakValue = t.get%4$s(tweakName, tweakDefault);\n" + // PARAM TYPE, PARAM TYPE
-        "                    typedRegistrant.%5$s(tweakValue);\n" + // TWEAKED METHOD NAME
+        "                    final %4$s tweakValue = t.%5$s(tweakName, tweakDefault);\n" + // PARAM TYPE, PARAM TYPE
+        "                    typedRegistrant.%6$s(tweakValue);\n" + // TWEAKED METHOD NAME
         "                }\n" +
         "            }); // bind()\n" +
         "        }\n" +

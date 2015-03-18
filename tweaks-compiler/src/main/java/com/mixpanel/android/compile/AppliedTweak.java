@@ -24,11 +24,21 @@ public class AppliedTweak {
             public String getFormattedDefaultValue(Tweak t) {
                 return Boolean.toString(t.defaultBoolean());
             }
+
+            @Override
+            public String getAccessorName() {
+                return "getBoolean";
+            }
         },
         DOUBLE_TWEAK("double") {
             @Override
             public String getFormattedDefaultValue(Tweak t) {
                 return Double.toString(t.defaultDouble());
+            }
+
+            @Override
+            public String getAccessorName() {
+                return "getDouble";
             }
         },
         LONG_TWEAK("long") {
@@ -36,11 +46,21 @@ public class AppliedTweak {
             public String getFormattedDefaultValue(Tweak t) {
                 return Long.toString(t.defaultLong());
             }
+
+            @Override
+            public String getAccessorName() {
+                return "getLong";
+            }
         },
         STRING_TWEAK("String") {
             @Override
             public String getFormattedDefaultValue(Tweak t) {
                 return JavaStringEscape.escape(t.defaultString());
+            }
+
+            @Override
+            public String getAccessorName() {
+                return "getString";
             }
         };
 
@@ -53,6 +73,8 @@ public class AppliedTweak {
         }
 
         public abstract String getFormattedDefaultValue(Tweak t);
+        public abstract String getAccessorName();
+
         private final String mTypeName;
     }
 

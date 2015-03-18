@@ -2,6 +2,8 @@ package com.mixpanel.android.compile;
 
 import com.mixpanel.android.build.Tweak;
 
+import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -9,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.Filer;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.SourceVersion;
@@ -16,6 +19,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
+import javax.tools.JavaFileObject;
 
 @SupportedAnnotationTypes({"*"})
 public class TweaksAnnotationProcessor extends AbstractProcessor {
@@ -40,11 +44,35 @@ public class TweaksAnnotationProcessor extends AbstractProcessor {
             processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, e.getMessage(), e.getElement());
         }
 
-        final TweakClassWriter writer = new TweakClassWriter();
-
+        final Filer filer = processingEnv.getFiler();
+        final TweakClassFormatter formatter = new TweakClassFormatter();
         for (Map.Entry<Name, Collection<AppliedTweak>> packaged:packageApplications.entrySet()) {
-            final String classContents = writer.tweaksClassAsString(packaged.getKey(), packaged.getValue());
-            System.out.println(classContents);
+            final Name name = packaged.getKey();
+            final Collection<AppliedTweak> applications = packaged.getValue();
+            final String classContents = formatter.tweaksClassAsString(name, applications);
+            final Element[] elementArgs = new Element[applications.size()];
+            int i = 0;
+            for (final AppliedTweak application:applications) {
+                elementArgs[i] = application.getTweakedMethod();
+                i++;
+            }
+
+            Writer writer = null;
+            try {
+                final JavaFileObject file = filer.createSourceFile(name.toString() + ".$$TWEAK_REGISTRAR", elementArgs);
+                writer = file.openWriter();
+                writer.write(classContents);
+            } catch (IOException e) {
+                processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, e.getMessage());
+            } finally {
+                if (null != writer) {
+                    try {
+                        writer.close();
+                    } catch (IOException e) {
+                        processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, e.getMessage());
+                    }
+                }
+            }
         }
 
         return false;
