@@ -22,5 +22,5 @@ public class ManualTweakClass implements Tweaks.TweakRegistrar { // This will be
         }
     } // registerObjectForTweaks
 
-    public static final ManualTweakClass INSTANCE = new ManualTweakClass();
+    public static final ManualTweakClass TWEAK_REGISTRAR = new ManualTweakClass();
 }
