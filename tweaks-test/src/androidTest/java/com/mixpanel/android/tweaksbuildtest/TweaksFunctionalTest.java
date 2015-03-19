@@ -4,8 +4,6 @@ import android.test.AndroidTestCase;
 
 import com.mixpanel.android.mpmetrics.Tweaks;
 
-import java.util.HashMap;
-
 public class TweaksFunctionalTest extends AndroidTestCase {
     public void testThisRuns() {
         assertTrue(true);

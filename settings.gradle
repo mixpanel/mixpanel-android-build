@@ -1,2 +1,2 @@
-include ':tweaks',':tweaks-test', ':tweaks-compiler'
+include ':annotations',':annotations-compiler',':tweaks-test'
 rootProject.name = 'mixpanel-android-build'

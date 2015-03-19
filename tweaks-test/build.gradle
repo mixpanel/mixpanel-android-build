@@ -1,5 +1,5 @@
-evaluationDependsOn(':tweaks')
-evaluationDependsOn(':tweaks-compiler')
+evaluationDependsOn(':annotations')
+evaluationDependsOn(':annotations-compiler')
 
 buildscript {
     repositories {
@@ -68,6 +68,6 @@ repositories {
 
 dependencies {
     compile 'com.mixpanel.android:mixpanel-android:4.5.4-SNAPSHOT@aar'
-    compile project(':tweaks')
-    provided project(':tweaks-compiler')
+    compile project(':annotations')
+    provided project(':annotations-compiler')
 }
