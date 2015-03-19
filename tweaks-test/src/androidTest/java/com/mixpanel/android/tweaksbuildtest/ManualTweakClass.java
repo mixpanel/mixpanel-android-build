@@ -7,7 +7,7 @@ public class ManualTweakClass implements Tweaks.TweakRegistrar { // This will be
 
     @Override
     public void registerObjectForTweaks(final Tweaks t, final Object registrant) {
-        {
+        if (registrant instanceof ManuallyTweakedObject) {
             final String tweakName = "bananas";
             final String tweakDefault = "Default Value";
 
