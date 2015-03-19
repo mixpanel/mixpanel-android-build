@@ -1,49 +1,34 @@
 evaluationDependsOn(':annotations')
 evaluationDependsOn(':annotations-compiler')
 
+/**
+ * IMPORTANT IMPORTANT IMPORTANT
+ *
+ * In order to test the gradle plugin and compiler bits of this project, this gradle
+ * file requires artifacts produced by the annotations and annotations-compiler projects,
+ * but does not refer to those projects themselves. Artifacts should be uploaded with
+ *
+ * ./gradlew :annotations:uploadArchives :annotations-compiler:uploadArchives
+ *
+ * before this gradle file will even parse.
+ *
+ * This is circular, nasty, and requires human intervention to bootstrap, and there
+ * may be a clever gradle way to deal with it. PATCHES TO THAT EFFECT ARE VERY WELCOME.
+ */
+
 buildscript {
     repositories {
-        mavenCentral()
+        mavenLocal()
     }
-}
 
-// As far as I can tell, we can't use the actual plugin because here because building the plugin happens
-// after we evaluate the buildscript {} portion of this file. The shoemaker's kids
-// go shoeless, I guess...
-
-class LocalTweaksGradlePlugin implements Plugin<Project> {
-    @Override
-    void apply(final Project project) {
-        project.afterEvaluate {
-            if (project.android.hasProperty("libraryVariants")) {
-                project.android.libraryVariants.all { variant ->
-                    variant.javaCompile.options.compilerArgs += [
-                            '-processor', 'com.mixpanel.android.compile.TweaksAnnotationProcessor'
-                    ]
-                }
-            }
-
-            if (project.android.hasProperty("testVariants")) {
-                project.android.testVariants.all { variant ->
-                    variant.javaCompile.options.compilerArgs += [
-                            '-processor', 'com.mixpanel.android.compile.TweaksAnnotationProcessor'
-                    ]
-                }
-            }
-
-            if (project.android.hasProperty("applicationVariants")) {
-                project.android.applicationVariants.all { variant ->
-                    variant.javaCompile.options.compilerArgs += [
-                            '-processor', 'com.mixpanel.android.compile.TweaksAnnotationProcessor'
-                    ]
-                }
-            }
-        }
+    dependencies {
+        classpath 'com.mixpanel.android:annotations-compiler:' + version
     }
 }
 
 apply plugin: 'android-library'
-apply plugin: LocalTweaksGradlePlugin
+apply plugin: 'mixpanel-android-annotations'
+
 
 android {
     compileSdkVersion 21
@@ -68,6 +53,6 @@ repositories {
 
 dependencies {
     compile 'com.mixpanel.android:mixpanel-android:4.5.4-SNAPSHOT@aar'
-    compile project(':annotations')
-    provided project(':annotations-compiler')
+    compile 'com.mixpanel.android:annotations:' + version
+    provided 'com.mixpanel.android:annotations-compiler:' + version
 }
