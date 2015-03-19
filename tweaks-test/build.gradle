@@ -5,12 +5,45 @@ buildscript {
     repositories {
         mavenCentral()
     }
-    dependencies {
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.2+'
+}
+
+// As far as I can tell, we can't use the actual plugin because here because building the plugin happens
+// after we evaluate the buildscript {} portion of this file. The shoemaker's kids
+// go shoeless, I guess...
+
+class LocalTweaksGradlePlugin implements Plugin<Project> {
+    @Override
+    void apply(final Project project) {
+        project.afterEvaluate {
+            if (project.android.hasProperty("libraryVariants")) {
+                project.android.libraryVariants.all { variant ->
+                    variant.javaCompile.options.compilerArgs += [
+                            '-processor', 'com.mixpanel.android.compile.TweaksAnnotationProcessor'
+                    ]
+                }
+            }
+
+            if (project.android.hasProperty("testVariants")) {
+                project.android.testVariants.all { variant ->
+                    variant.javaCompile.options.compilerArgs += [
+                            '-processor', 'com.mixpanel.android.compile.TweaksAnnotationProcessor'
+                    ]
+                }
+            }
+
+            if (project.android.hasProperty("applicationVariants")) {
+                project.android.applicationVariants.all { variant ->
+                    variant.javaCompile.options.compilerArgs += [
+                            '-processor', 'com.mixpanel.android.compile.TweaksAnnotationProcessor'
+                    ]
+                }
+            }
+        }
     }
 }
 
 apply plugin: 'android-library'
+apply plugin: LocalTweaksGradlePlugin
 
 android {
     compileSdkVersion 21
@@ -31,20 +64,6 @@ android {
 
 repositories {
     mavenLocal()
-}
-
-android.libraryVariants.all { variant ->
-    // TODO This should be a gradle plugin
-    variant.javaCompile.options.compilerArgs += [
-            '-processor', 'com.mixpanel.android.compile.TweaksAnnotationProcessor'
-    ]
-}
-
-android.testVariants.all { variant ->
-    // TODO This should be a gradle plugin
-    variant.javaCompile.options.compilerArgs += [
-            '-processor', 'com.mixpanel.android.compile.TweaksAnnotationProcessor'
-    ]
 }
 
 dependencies {
