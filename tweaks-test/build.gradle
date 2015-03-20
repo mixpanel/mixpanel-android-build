@@ -53,6 +53,4 @@ repositories {
 
 dependencies {
     compile 'com.mixpanel.android:mixpanel-android:4.5.4-SNAPSHOT@aar'
-    compile 'com.mixpanel.android:annotations:' + version
-    provided 'com.mixpanel.android:annotations-compiler:' + version
 }
