@@ -49,10 +49,10 @@ public class TweakClassFormatter {
         "            final %4$s tweakDefault = %3$s;\n" + // PARAM TYPE, TWEAKED DEFAULT VALUE AS LEGAL JAVA LITERAL
         "\n" +
         "            final %1$s typedRegistrant = (%1$s) registrant;\n" + // TWEAKED CLASS, TWEAKED CLASS
-        "            t.bind(tweakName, tweakDefault, new Tweaks.TweakChangeCallback() {\n" +
+        "            t.bind(tweakName, tweakDefault, registrant, new Tweaks.TweakChangeCallback() {\n" +
         "                @Override\n" +
         "                public void onChange(Object _ignored) {\n" +
-        "                    final %4$s tweakValue = t.%5$s(tweakName, tweakDefault);\n" + // PARAM TYPE, PARAM TYPE
+        "                    final %4$s tweakValue = t.%5$s(tweakName);\n" + // PARAM TYPE, PARAM TYPE
         "                    typedRegistrant.%6$s(tweakValue);\n" + // TWEAKED METHOD NAME
         "                }\n" +
         "            }); // bind()\n" +

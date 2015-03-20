@@ -12,10 +12,10 @@ public class ManualTweakClass implements Tweaks.TweakRegistrar { // This will be
             final String tweakDefault = "Default Value";
 
             final ManuallyTweakedObject typedRegistrant = (ManuallyTweakedObject) registrant;
-            t.bind(tweakName, tweakDefault, new Tweaks.TweakChangeCallback() {
+            t.bind(tweakName, tweakDefault, registrant, new Tweaks.TweakChangeCallback() {
                 @Override
                 public void onChange(Object _ignored) {
-                    final String tweakValue = t.getString(tweakName, tweakDefault);
+                    final String tweakValue = t.getString(tweakName);
                     typedRegistrant.manualStringTweak(tweakValue); // typedRegistrant.${TweakMethodName}(tweakValue);
                 }
             }); // bind()
