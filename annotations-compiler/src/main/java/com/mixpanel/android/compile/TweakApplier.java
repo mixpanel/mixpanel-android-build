@@ -27,7 +27,7 @@ public class TweakApplier {
         mTweakedElements = new HashMap<String, ExecutableElement>();
     }
 
-    public AppliedTweak readTweakApplication(Types types, Elements elements, Element tweakedElement)
+    public AppliedTweak readTweakApplication(Types typeUtils, Elements elementUtils, Element tweakedElement)
             throws IllegalTweakException {
         if (tweakedElement.getKind() != ElementKind.METHOD) {
             throw new IllegalTweakException("Only methods can be tweaked (not) " + tweakedElement, tweakedElement);
@@ -78,10 +78,10 @@ public class TweakApplier {
         final VariableElement param = params.get(0);
         final TypeMirror intendedParamType = param.asType();
 
-        final TypeMirror charSequenceType = elements.getTypeElement("java.lang.CharSequence").asType();
-        final TypeMirror doubleType = elements.getTypeElement("java.lang.Double").asType();
-        final TypeMirror booleanType = elements.getTypeElement("java.lang.Boolean").asType();
-        final TypeMirror longType = elements.getTypeElement("java.lang.Long").asType();
+        final TypeMirror charSequenceType = elementUtils.getTypeElement("java.lang.CharSequence").asType();
+        final TypeMirror doubleType = elementUtils.getTypeElement("java.lang.Double").asType();
+        final TypeMirror booleanType = elementUtils.getTypeElement("java.lang.Boolean").asType();
+        final TypeMirror longType = elementUtils.getTypeElement("java.lang.Long").asType();
 
         AppliedTweak.ParameterType tweakParameterType = null;
         switch (intendedParamType.getKind()) {
@@ -95,13 +95,13 @@ public class TweakApplier {
                 tweakParameterType = AppliedTweak.ParameterType.LONG_TWEAK;
                 break;
             case DECLARED:
-                if (types.isAssignable(intendedParamType, booleanType)) {
+                if (typeUtils.isAssignable(intendedParamType, booleanType)) {
                     tweakParameterType = AppliedTweak.ParameterType.BOOLEAN_TWEAK;
-                } else if (types.isAssignable(intendedParamType, doubleType)) {
+                } else if (typeUtils.isAssignable(intendedParamType, doubleType)) {
                     tweakParameterType = AppliedTweak.ParameterType.DOUBLE_TWEAK;
-                } else if (types.isAssignable(intendedParamType, longType)) {
+                } else if (typeUtils.isAssignable(intendedParamType, longType)) {
                     tweakParameterType = AppliedTweak.ParameterType.LONG_TWEAK;
-                } else if (types.isAssignable(intendedParamType, charSequenceType)) {
+                } else if (typeUtils.isAssignable(intendedParamType, charSequenceType)) {
                     tweakParameterType = AppliedTweak.ParameterType.STRING_TWEAK;
                 }
                 break;
