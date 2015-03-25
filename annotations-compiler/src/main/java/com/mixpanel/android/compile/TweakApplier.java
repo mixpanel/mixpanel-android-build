@@ -40,25 +40,20 @@ public class TweakApplier {
         final ExecutableElement tweakedMethod = (ExecutableElement) tweakedElement;
         PackageElement tweakedPackage = null;
         TypeElement tweakedType = null;
-        {
-            Element container = tweakedElement;
-            while (null != container) {
-                final ElementKind kind = container.getKind();
-                if (kind == ElementKind.CLASS || kind == ElementKind.INTERFACE) {
-                    if (null == tweakedType) { // We tweak the innermost class or interface, but nesting is ok.
-                        tweakedType = (TypeElement) container;
-                    }
-
-                    if(!container.getModifiers().contains(Modifier.PUBLIC)) {
-                        throw new IllegalTweakException("All classes or interfaces containing a tweak must be public (and " + container + " is not)", tweakedElement);
-                    }
+        for (Element container = tweakedElement; null != container; container = container.getEnclosingElement()) {
+            final ElementKind kind = container.getKind();
+            if (kind == ElementKind.CLASS || kind == ElementKind.INTERFACE) {
+                if (null == tweakedType) { // We tweak the innermost class or interface, but nesting is ok.
+                    tweakedType = (TypeElement) container;
                 }
 
-                if (container.getKind() == ElementKind.PACKAGE) {
-                    tweakedPackage = (PackageElement) container; // nested packages are impossible, so we should find at most one of these.
+                if(!container.getModifiers().contains(Modifier.PUBLIC)) {
+                    throw new IllegalTweakException("All classes or interfaces containing a tweak must be public (and " + container + " is not)", tweakedElement);
                 }
+            }
 
-                container = container.getEnclosingElement();
+            if (container.getKind() == ElementKind.PACKAGE) {
+                tweakedPackage = (PackageElement) container; // nested packages are impossible, so we should find at most one of these.
             }
         }
 
