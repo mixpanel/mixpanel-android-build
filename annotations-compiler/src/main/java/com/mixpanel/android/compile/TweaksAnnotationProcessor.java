@@ -35,12 +35,13 @@ public class TweaksAnnotationProcessor extends AbstractProcessor {
         final Set<? extends Element> elements = roundEnv.getElementsAnnotatedWith(Tweak.class);
         final Map<Name, Collection<AppliedTweak>> packageApplications = new HashMap<Name, Collection<AppliedTweak>>();
 
-        try {
-            for (Element el:elements) {
+
+        for (Element el:elements) {
+            try {
                 final AppliedTweak application = mTweakApplier.readTweakApplication(
-                    processingEnv.getTypeUtils(),
-                    processingEnv.getElementUtils(),
-                    el
+                        processingEnv.getTypeUtils(),
+                        processingEnv.getElementUtils(),
+                        el
                 );
                 final Name packageName = application.getPackage().getQualifiedName();
                 if (!packageApplications.containsKey(packageName)) {
@@ -49,9 +50,10 @@ public class TweaksAnnotationProcessor extends AbstractProcessor {
 
                 final Collection<AppliedTweak> group = packageApplications.get(packageName);
                 group.add(application);
+
+            } catch (IllegalTweakException e) {
+                processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, e.getMessage(), e.getElement());
             }
-        } catch (IllegalTweakException e) {
-            processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, e.getMessage(), e.getElement());
         }
 
         final Filer filer = processingEnv.getFiler();
