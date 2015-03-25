@@ -103,10 +103,12 @@ public class TweakApplier {
                     tweakParameterType = AppliedTweak.ParameterType.LONG_TWEAK;
                 } else if (typeUtils.isAssignable(intendedParamType, charSequenceType)) {
                     tweakParameterType = AppliedTweak.ParameterType.STRING_TWEAK;
+                } else {
+                    throw new IllegalTweakException("The parameter to a tweaked method " + tweakedElement + " must be assignable from String, boolean, double, or long", tweakedElement);
                 }
                 break;
             default:
-                throw new IllegalTweakException("The parameter to a tweaked method " + tweakedElement + " must be String, Boolean, Double, or Long", tweakedElement);
+                throw new IllegalTweakException("The parameter to a tweaked method " + tweakedElement + " must be assignable from String, boolean, double, or long", tweakedElement);
         }
 
         final Tweak tweak = tweakedMethod.getAnnotation(Tweak.class);
