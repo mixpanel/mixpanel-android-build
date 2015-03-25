@@ -7,7 +7,6 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.SOURCE)
-public @interface Tweak {
-    String defaultString() default "";
-    double defaultNumber() default 0.0;
+public @interface BooleanDefault {
+    boolean value();
 }

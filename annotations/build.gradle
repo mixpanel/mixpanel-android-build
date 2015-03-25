@@ -1,0 +1,38 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+uploadArchives {
+    configuration = configurations.archives
+
+    repositories.mavenDeployer {
+        pom.project {
+            description 'Annotations for the Mixpanel library for Android \n' +
+                    'http://mixpanel.com/android-analytics/'
+            url 'https://github.com/mixpanel/mixpanel-android'
+            scm {
+                url 'http://github.com/mixpanel/mixpanel-android-build'
+                connection 'scm:git:http://github.com/mixpanel/mixpanel-android-build'
+                developerConnection 'scm:git:git@github.com:mixpanel/mixpanel-android-build.git'
+            }
+            licenses {
+                license {
+                    name 'The Apache Software License, Version 2.0'
+                    url 'http://www.apache.org/license/LICENSE-2.0.txt'
+                    distribution 'repo'
+                }
+            }
+            developers {
+                developer {
+                    id 'mixpanel_dev'
+                    name 'Mixpanel Developers'
+                    email 'dev@mixpanel.com'
+                }
+            }
+        }
+
+        repository(url:'file://' + new File(System.getProperty('user.home'), '.m2/repository').absolutePath)
+    }
+}

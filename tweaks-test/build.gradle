@@ -1,4 +1,34 @@
+evaluationDependsOn(':annotations')
+evaluationDependsOn(':annotations-compiler')
+
+/**
+ * IMPORTANT IMPORTANT IMPORTANT
+ *
+ * In order to test the gradle plugin and compiler bits of this project, this gradle
+ * file requires artifacts produced by the annotations and annotations-compiler projects,
+ * but does not refer to those projects themselves. Artifacts should be uploaded with
+ *
+ * ./gradlew :annotations:uploadArchives :annotations-compiler:uploadArchives
+ *
+ * before this gradle file will even parse.
+ *
+ * This is circular, nasty, and requires human intervention to bootstrap, and there
+ * may be a clever gradle way to deal with it. PATCHES TO THAT EFFECT ARE VERY WELCOME.
+ */
+
+buildscript {
+    repositories {
+        mavenLocal()
+    }
+
+    dependencies {
+        classpath 'com.mixpanel.android:annotations-compiler:' + version
+    }
+}
+
 apply plugin: 'android-library'
+apply plugin: 'mixpanel-android-annotations'
+
 
 android {
     compileSdkVersion 21
@@ -15,4 +45,12 @@ android {
             warningsAsErrors true
         }
     }
+}
+
+repositories {
+    mavenLocal()
+}
+
+dependencies {
+    compile 'com.mixpanel.android:mixpanel-android:4.5.4-SNAPSHOT@aar'
 }
