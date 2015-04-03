@@ -38,7 +38,7 @@ To add Tweak annotations to your build, add the following buildscript dependency
 buildscript {
     dependencies {
         // Add the line below as a dependency of your buildscript
-        classpath 'com.mixpanel.android:annotations-compiler:1.0.0'
+        classpath 'com.mixpanel.android:annotations-compiler:0.1.0'
     }
 }
 
