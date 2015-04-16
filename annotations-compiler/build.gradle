@@ -1,6 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'maven'
+apply plugin: 'signing'
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
@@ -11,11 +12,38 @@ dependencies {
     compile gradleApi()
 }
 
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
+
+def isReleaseVersion() {
+    return !version.endsWith("SNAPSHOT");
+}
+
+if (isReleaseVersion()) {
+    signing {
+        required { gradle.taskGraph.hasTask("uploadArchives") }
+        sign configurations.archives
+    }
+}
+
 uploadArchives {
     configuration = configurations.archives
 
     repositories.mavenDeployer {
         pom.project {
+            name project.name
             description 'Annotation Processor for the Mixpanel library for Android \n' +
                     'http://mixpanel.com/android-analytics/'
             url 'https://github.com/mixpanel/mixpanel-android'
@@ -40,6 +68,28 @@ uploadArchives {
             }
         }
 
-        repository(url:'file://' + new File(System.getProperty('user.home'), '.m2/repository').absolutePath)
+        if (isReleaseVersion() && project.hasProperty("sonatypeUsername")) {
+            /**
+             * In order to do nexus deploys, you'll need to setup a gradle.properties file in $HOME/.gradle
+             * with the following properties. You'll need the mixpanel.key file and then import it using GnuPG
+             * which will provide you with the keyId and the secring.gpg file
+             * signing.keyId=
+             * signing.password=
+             * signing.secretKeyRingFile=
+             *
+             * sonatypeRepo=https://oss.sonatype.org/service/local/staging/deploy/maven2/
+             * sonatypeUsername=
+             * sonatypePassword=
+             */
+
+            beforeDeployment {
+                MavenDeployment deployment -> signing.signPom(deployment)
+            }
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: sonatypeUsername, password: sonatypePassword)
+            }
+        } else {
+            repository(url: 'file://' + new File(System.getProperty('user.home'), '.m2/repository').absolutePath)
+        }
     }
 }
