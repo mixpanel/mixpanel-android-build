@@ -1,4 +1,4 @@
-package com.mixpanel.android.tweaksbuildtest;
+package com.mixpanel.android.tweaksbuildtest.manual;
 
 public class ManuallyTweakedObject {
     public void manualStringTweak(String s) {

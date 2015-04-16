@@ -3,6 +3,7 @@ package com.mixpanel.android.tweaksbuildtest;
 import android.test.AndroidTestCase;
 
 import com.mixpanel.android.mpmetrics.Tweaks;
+import com.mixpanel.android.tweaksbuildtest.manual.ManuallyTweakedObject;
 
 public class TweaksFunctionalTest extends AndroidTestCase {
     public void testThisRuns() {

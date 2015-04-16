@@ -1,4 +1,4 @@
-package com.mixpanel.android.tweaksbuildtest; // PACKAGE OF ENCLOSING CLASS
+package com.mixpanel.android.tweaksbuildtest.manual; // PACKAGE OF ENCLOSING CLASS
 
 import com.mixpanel.android.mpmetrics.Tweaks; // Constant
 
