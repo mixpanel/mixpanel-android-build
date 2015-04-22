@@ -53,6 +53,9 @@ To add Tweak annotations to your build, add the following buildscript dependency
 
 ```groovy
 buildscript {
+    repositories {
+        mavenCentral()
+    }
     dependencies {
         // Add the line below as a dependency of your buildscript
         classpath 'com.mixpanel.android:annotations-compiler:0.1.0'
