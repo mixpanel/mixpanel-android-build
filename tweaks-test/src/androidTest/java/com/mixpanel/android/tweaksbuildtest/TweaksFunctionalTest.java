@@ -21,15 +21,47 @@ public class TweaksFunctionalTest extends AndroidTestCase {
         assertEquals("A B C", subject.tweakedString);
     }
 
+    public void testUntweaked() {
+        final TweakedObject subject = new TweakedObject();
+        final Tweaks tweaks = new Tweaks(new SynchronousHandler(), "$$TWEAK_REGISTRAR");
+        assertNotNull(tweaks);
+        assertEquals("Before Registration", subject.stringBanana);
+        assertNull(subject.booleanTweak);
+        assertNull(subject.doubleTweak);
+        assertNull(subject.longTweak);
+    }
+
     public void testTweakResults() {
         final TweakedObject subject = new TweakedObject();
         final Tweaks tweaks = new Tweaks(new SynchronousHandler(), "$$TWEAK_REGISTRAR");
         tweaks.registerForTweaks(subject);
 
         assertEquals("Default Value", subject.stringBanana);
+        assertEquals(22.3, subject.doubleTweak);
+        assertEquals(new Long(22), subject.longTweak);
+        assertEquals(new Double(22.3), subject.doubleTweak);
 
         tweaks.set("bananas", "A B C");
+        tweaks.set("double tweak", 11.1d);
+        tweaks.set("long tweak", 111l);
+        tweaks.set("boolean tweak", false);
+
         assertEquals("A B C", subject.stringBanana);
+        assertEquals(new Boolean(false), subject.booleanTweak);
+        assertEquals(new Double(11.1), subject.doubleTweak);
+        assertEquals(new Long(111), subject.longTweak);
+    }
+
+    public void testNumberTypesWork() {
+        final TweakedObject subject = new TweakedObject();
+        final Tweaks tweaks = new Tweaks(new SynchronousHandler(), "$$TWEAK_REGISTRAR");
+        tweaks.registerForTweaks(subject);
+
+        tweaks.set("double tweak", 11.1f);
+        tweaks.set("long tweak", (short)111);
+
+        assertEquals(new Double(11.1), subject.doubleTweak, 0.01);
+        assertEquals(new Long(111), subject.longTweak);
     }
 
     public void testTweaksSuperclasses() {

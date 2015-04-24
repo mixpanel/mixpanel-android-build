@@ -8,7 +8,7 @@ import javax.lang.model.element.TypeElement;
 public class AppliedTweak {
 
     public static enum ParameterType {
-        BOOLEAN_TWEAK("bool") {
+        BOOLEAN_TWEAK("boolean") {
             @Override
             public String getFormattedDefaultValue(TweakInfo t) {
                 return Boolean.toString(t.getDefaultBoolean());
