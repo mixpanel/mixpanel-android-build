@@ -1,6 +1,11 @@
-/.idea
+/mixpanel-android-build/.idea
+tweaks-test/.idea
 *.iml
 build
-/.gradle/
-/gradle/
-/local.properties
+/tweaks-test/build
+/mixpanel-android-build/.gradle/
+/tweaks-test/.gradle/
+/mixpanel-android-build/gradle/
+/tweaks-test/gradle/
+/mixpanel-android-build/local.properties
+/tweaks-test/local.properties

@@ -1,0 +1,2 @@
+include ':annotations',':annotations-compiler'
+rootProject.name = 'mixpanel-android-build'
