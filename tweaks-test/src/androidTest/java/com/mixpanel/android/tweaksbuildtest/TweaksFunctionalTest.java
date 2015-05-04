@@ -12,7 +12,7 @@ public class TweaksFunctionalTest extends AndroidTestCase {
 
     public void testManualTweaksCode() throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
         final ManuallyTweakedObject subject = new ManuallyTweakedObject();
-        final Tweaks tweaks = new Tweaks(new SynchronousHandler(), "mixpanel/tweak_registrars");
+        final Tweaks tweaks = new Tweaks(new SynchronousHandler(), "ManualTweakClass");
         tweaks.registerForTweaks(subject);
 
         assertEquals("Default Value", subject.tweakedString);
@@ -23,7 +23,7 @@ public class TweaksFunctionalTest extends AndroidTestCase {
 
     public void testUntweaked() {
         final TweakedObject subject = new TweakedObject();
-        final Tweaks tweaks = new Tweaks(new SynchronousHandler(), "mixpanel/tweak_registrars");
+        final Tweaks tweaks = new Tweaks(new SynchronousHandler(), "$$TWEAK_REGISTRAR");
         assertNotNull(tweaks);
         assertEquals("Before Registration", subject.stringBanana);
         assertNull(subject.booleanTweak);
@@ -33,7 +33,7 @@ public class TweaksFunctionalTest extends AndroidTestCase {
 
     public void testTweakResults() {
         final TweakedObject subject = new TweakedObject();
-        final Tweaks tweaks = new Tweaks(new SynchronousHandler(), "mixpanel/tweak_registrars");
+        final Tweaks tweaks = new Tweaks(new SynchronousHandler(), "$$TWEAK_REGISTRAR");
         tweaks.registerForTweaks(subject);
 
         assertEquals("Default Value", subject.stringBanana);
@@ -54,7 +54,7 @@ public class TweaksFunctionalTest extends AndroidTestCase {
 
     public void testNumberTypesWork() {
         final TweakedObject subject = new TweakedObject();
-        final Tweaks tweaks = new Tweaks(new SynchronousHandler(), "mixpanel/tweak_registrars");
+        final Tweaks tweaks = new Tweaks(new SynchronousHandler(), "$$TWEAK_REGISTRAR");
         tweaks.registerForTweaks(subject);
 
         tweaks.set("double tweak", 11.1f);
@@ -69,7 +69,7 @@ public class TweaksFunctionalTest extends AndroidTestCase {
 
         {
             final TweakedObject.InnerB childSubject = tObj.new InnerB();
-            final Tweaks tweaks = new Tweaks(new SynchronousHandler(), "mixpanel/tweak_registrars");
+            final Tweaks tweaks = new Tweaks(new SynchronousHandler(), "$$TWEAK_REGISTRAR");
             tweaks.registerForTweaks(childSubject);
 
             assertEquals("Parent Default at Child", childSubject.parentTweak);
@@ -84,7 +84,7 @@ public class TweaksFunctionalTest extends AndroidTestCase {
 
         {
             final TweakedObject.InnerA parentSubject = tObj.new InnerA();
-            final Tweaks tweaks = new Tweaks(new SynchronousHandler(), "mixpanel/tweak_registrars");
+            final Tweaks tweaks = new Tweaks(new SynchronousHandler(), "$$TWEAK_REGISTRAR");
             tweaks.registerForTweaks(parentSubject);
 
             assertEquals("Parent Default at Parent", parentSubject.parentTweak);
