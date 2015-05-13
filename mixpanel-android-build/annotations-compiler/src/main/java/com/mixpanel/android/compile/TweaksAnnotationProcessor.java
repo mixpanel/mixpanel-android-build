@@ -36,15 +36,16 @@ public class TweaksAnnotationProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        if (!roundEnv.processingOver()) {
-            accumulateApplications(roundEnv);
-        } else {
+        final int seenTweaksCount = mTweaks.size();
+        accumulateApplications(roundEnv);
+
+        if (mTweaks.size() != seenTweaksCount) {
             final Map<String, String> options = processingEnv.getOptions();
             final String outputPackage = options.get("com.mixpanel.android.compiler.RegistrarPackage");
             if (null == outputPackage) {
                 processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Mixpanel build tools require -Acom.mixpanel.android.compiler.RegistrarPackage option", null);
             }
-            emitTweakRegistrar(outputPackage); // TODO this emits a spurious warning about not processing the generated file.
+            emitTweakRegistrar(outputPackage);
         }
 
         return false;
@@ -68,10 +69,6 @@ public class TweaksAnnotationProcessor extends AbstractProcessor {
     }
 
     public void emitTweakRegistrar(final String outputPackage) {
-        if (mTweaks.isEmpty()) {
-            return; // Nothing to emit.
-        }
-
         final Filer filer = processingEnv.getFiler();
         final TweakClassFormatter formatter = new TweakClassFormatter();
         final String classContents = formatter.tweaksClassAsString(outputPackage, mTweaks);
@@ -86,6 +83,7 @@ public class TweaksAnnotationProcessor extends AbstractProcessor {
         try {
             final String className = outputPackage + ".$$TWEAK_REGISTRAR";
             final JavaFileObject file = filer.createSourceFile(className, elementArgs);
+            file.delete();
             writer = file.openWriter();
             writer.write(classContents);
         } catch (IOException e) {
