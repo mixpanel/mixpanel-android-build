@@ -36,7 +36,6 @@ android {
     defaultConfig {
          minSdkVersion 9
         targetSdkVersion 22
-        testApplicationId "com.mixpanel.android.mpmetrics"
         testInstrumentationRunner "android.test.InstrumentationTestRunner"
 
         lintOptions {
