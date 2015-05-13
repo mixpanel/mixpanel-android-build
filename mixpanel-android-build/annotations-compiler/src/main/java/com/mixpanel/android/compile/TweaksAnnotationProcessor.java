@@ -8,6 +8,8 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -15,6 +17,7 @@ import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.annotation.processing.SupportedOptions;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Name;
@@ -28,66 +31,74 @@ public class TweaksAnnotationProcessor extends AbstractProcessor {
     public TweaksAnnotationProcessor() {
         super();
         mTweakApplier = new TweakApplier();
+        mTweaks = new ArrayList<AppliedTweak>();
     }
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        final Set<? extends Element> elements = roundEnv.getElementsAnnotatedWith(Tweak.class);
-        final Map<Name, Collection<AppliedTweak>> packageApplications = new HashMap<Name, Collection<AppliedTweak>>();
+        if (!roundEnv.processingOver()) {
+            accumulateApplications(roundEnv);
+        } else {
+            final Map<String, String> options = processingEnv.getOptions();
+            final String outputPackage = options.get("com.mixpanel.android.compiler.RegistrarPackage");
+            if (null == outputPackage) {
+                processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Mixpanel build tools require -Acom.mixpanel.android.compiler.RegistrarPackage option", null);
+            }
+            emitTweakRegistrar(outputPackage); // TODO this emits a spurious warning about not processing the generated file.
+        }
 
-        for (Element el:elements) {
+        return false;
+    }
+
+    public void accumulateApplications(RoundEnvironment roundEnv) {
+        final Set<? extends Element> elements = roundEnv.getElementsAnnotatedWith(Tweak.class);
+        for (Element el : elements) {
             try {
                 final AppliedTweak application = mTweakApplier.readTweakApplication(
                         processingEnv.getTypeUtils(),
                         processingEnv.getElementUtils(),
                         el
                 );
-                final Name packageName = application.getPackage().getQualifiedName();
-                if (!packageApplications.containsKey(packageName)) {
-                    packageApplications.put(packageName, new ArrayList<AppliedTweak>());
-                }
-
-                final Collection<AppliedTweak> group = packageApplications.get(packageName);
-                group.add(application);
+                mTweaks.add(application);
 
             } catch (IllegalTweakException e) {
                 processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, e.getMessage(), e.getElement());
             }
         }
+    }
+
+    public void emitTweakRegistrar(final String outputPackage) {
+        if (mTweaks.isEmpty()) {
+            return; // Nothing to emit.
+        }
 
         final Filer filer = processingEnv.getFiler();
         final TweakClassFormatter formatter = new TweakClassFormatter();
-        for (Map.Entry<Name, Collection<AppliedTweak>> packaged:packageApplications.entrySet()) {
-            final Name name = packaged.getKey();
-            final Collection<AppliedTweak> applications = packaged.getValue();
-            final String classContents = formatter.tweaksClassAsString(name, applications);
-            final Element[] elementArgs = new Element[applications.size()];
-            int i = 0;
-            for (final AppliedTweak application:applications) {
-                elementArgs[i] = application.getTweakedMethod();
-                i++;
-            }
+        final String classContents = formatter.tweaksClassAsString(outputPackage, mTweaks);
+        final Element[] elementArgs = new Element[mTweaks.size()];
+        int i = 0;
+        for (final AppliedTweak application:mTweaks) {
+            elementArgs[i] = application.getTweakedMethod();
+            i++;
+        }
 
-            Writer writer = null;
-            try {
-                final String className = name.toString() + ".$$TWEAK_REGISTRAR";
-                final JavaFileObject file = filer.createSourceFile(className, elementArgs);
-                writer = file.openWriter();
-                writer.write(classContents);
-            } catch (IOException e) {
-                processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, e.getMessage());
-            } finally {
-                if (null != writer) {
-                    try {
-                        writer.close();
-                    } catch (IOException e) {
-                        processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, e.getMessage());
-                    }
+        Writer writer = null;
+        try {
+            final String className = outputPackage + ".$$TWEAK_REGISTRAR";
+            final JavaFileObject file = filer.createSourceFile(className, elementArgs);
+            writer = file.openWriter();
+            writer.write(classContents);
+        } catch (IOException e) {
+            processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, e.getMessage());
+        } finally {
+            if (null != writer) {
+                try {
+                    writer.close();
+                } catch (IOException e) {
+                    processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, e.getMessage());
                 }
             }
         }
-
-        return false;
     }
 
     @Override
@@ -95,5 +106,13 @@ public class TweaksAnnotationProcessor extends AbstractProcessor {
         return SourceVersion.latestSupported();
     }
 
+    @Override
+    public Set<String> getSupportedOptions() {
+        final Set<String> ret = new HashSet<String>();
+        ret.add("com.mixpanel.android.compiler.RegistrarPackage");
+        return ret;
+    }
+
     private final TweakApplier mTweakApplier;
+    private final List<AppliedTweak> mTweaks;
 }

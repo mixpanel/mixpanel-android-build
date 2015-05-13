@@ -18,15 +18,18 @@ class TweaksGradlePlugin implements Plugin<Project> {
             if (project.android.hasProperty("libraryVariants")) {
                 project.android.libraryVariants.all { variant ->
                     variant.javaCompile.options.compilerArgs += [
-                            '-processor', 'com.mixpanel.android.compile.TweaksAnnotationProcessor'
+                            '-processor', 'com.mixpanel.android.compile.TweaksAnnotationProcessor',
+                            '-Acom.mixpanel.android.compiler.RegistrarPackage=' + variant.applicationId
                     ]
                 }
             }
 
             if (project.android.hasProperty("testVariants")) {
                 project.android.testVariants.all { variant ->
+                    variant.applicationId
                     variant.javaCompile.options.compilerArgs += [
-                            '-processor', 'com.mixpanel.android.compile.TweaksAnnotationProcessor'
+                            '-processor', 'com.mixpanel.android.compile.TweaksAnnotationProcessor',
+                            '-Acom.mixpanel.android.compiler.RegistrarPackage=' + variant.applicationId
                     ]
                 }
             }
@@ -34,7 +37,8 @@ class TweaksGradlePlugin implements Plugin<Project> {
             if (project.android.hasProperty("applicationVariants")) {
                 project.android.applicationVariants.all { variant ->
                     variant.javaCompile.options.compilerArgs += [
-                            '-processor', 'com.mixpanel.android.compile.TweaksAnnotationProcessor'
+                            '-processor', 'com.mixpanel.android.compile.TweaksAnnotationProcessor',
+                            '-Acom.mixpanel.android.compiler.RegistrarPackage=' + variant.applicationId
                     ]
                 }
             }

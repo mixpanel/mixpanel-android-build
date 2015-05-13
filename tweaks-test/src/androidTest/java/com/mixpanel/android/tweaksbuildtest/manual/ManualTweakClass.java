@@ -6,6 +6,11 @@ import com.mixpanel.android.mpmetrics.Tweaks; // Constant
 public class ManualTweakClass implements Tweaks.TweakRegistrar { // This will be named TweakedClass$$TWEAK_REGISTRAR
 
     @Override
+    public void declareTweaks(final Tweaks t) {
+        t.defineTweak("bananas", "DECLARED DEFAULT");
+    }
+
+    @Override
     public void registerObjectForTweaks(final Tweaks t, final Object registrant) {
         if (registrant instanceof ManuallyTweakedObject) {
             final String tweakName = "bananas";
