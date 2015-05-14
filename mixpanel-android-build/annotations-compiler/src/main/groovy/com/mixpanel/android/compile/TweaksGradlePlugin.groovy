@@ -7,7 +7,7 @@ class TweaksGradlePlugin implements Plugin<Project> {
 
     // This must match the value of "version" in gradle.properties
     // or you'll be installing old versions
-    private static final TARGET_VERSION = '0.1.0-SNAPSHOT';
+    private static final TARGET_VERSION = '0.1.0-RC1';
 
     @Override
     void apply(final Project project) {
