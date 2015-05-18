@@ -1,4 +1,4 @@
-package com.mixpanel.android.tweaksbuildtest.manual;
+package com.mixpanel.android.mpmetrics.manual;
 
 public class ManuallyTweakedObject {
     public void manualStringTweak(String s) {

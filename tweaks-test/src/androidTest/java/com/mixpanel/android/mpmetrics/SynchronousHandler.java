@@ -1,4 +1,4 @@
-package com.mixpanel.android.tweaksbuildtest;
+package com.mixpanel.android.mpmetrics;
 
 import android.os.Handler;
 import android.os.Message;

@@ -1,4 +1,4 @@
-package com.mixpanel.android.tweaksbuildtest;
+package com.mixpanel.android.mpmetrics;
 
 import com.mixpanel.android.build.BooleanDefault;
 import com.mixpanel.android.build.DoubleDefault;

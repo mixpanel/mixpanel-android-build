@@ -1,9 +1,10 @@
-package com.mixpanel.android.tweaksbuildtest.manual; // PACKAGE OF ENCLOSING CLASS
+package com.mixpanel.android.mpmetrics.manual; // PACKAGE OF ENCLOSING CLASS
 
+import com.mixpanel.android.mpmetrics.TweakRegistrar;
 import com.mixpanel.android.mpmetrics.Tweaks; // Constant
 
 // PackageTweaks bit won't work, we'll need to do this in the known class...
-public class ManualTweakClass implements Tweaks.TweakRegistrar { // This will be named TweakedClass$$TWEAK_REGISTRAR
+public class ManualTweakClass implements TweakRegistrar { // This will be named TweakedClass$$TWEAK_REGISTRAR
 
     @Override
     public void declareTweaks(final Tweaks t) {

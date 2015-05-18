@@ -1,10 +1,9 @@
-package com.mixpanel.android.tweaksbuildtest;
+package com.mixpanel.android.mpmetrics;
 
 import android.test.AndroidTestCase;
 
-import com.mixpanel.android.mpmetrics.Tweaks;
-import com.mixpanel.android.tweaksbuildtest.manual.ManualTweakClass;
-import com.mixpanel.android.tweaksbuildtest.manual.ManuallyTweakedObject;
+import com.mixpanel.android.mpmetrics.manual.ManualTweakClass;
+import com.mixpanel.android.mpmetrics.manual.ManuallyTweakedObject;
 
 public class TweaksFunctionalTest extends AndroidTestCase {
     public void setUp() {
@@ -101,6 +100,6 @@ public class TweaksFunctionalTest extends AndroidTestCase {
         }
     }
 
-    private Tweaks.TweakRegistrar mRegistrar;
+    private TweakRegistrar mRegistrar;
     private Tweaks mTweaks;
 }

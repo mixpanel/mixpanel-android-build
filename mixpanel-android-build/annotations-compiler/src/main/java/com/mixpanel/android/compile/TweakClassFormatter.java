@@ -43,8 +43,9 @@ public class TweakClassFormatter {
         "package %1$s;\n" + // PACKAGE OF ENCLOSING CLASS
         "\n" +
         "import com.mixpanel.android.mpmetrics.Tweaks;\n" +
+        "import com.mixpanel.android.mpmetrics.TweakRegistrar;\n" +
         "\n" +
-        "public class $$TWEAK_REGISTRAR implements Tweaks.TweakRegistrar {\n" +
+        "public class $$TWEAK_REGISTRAR implements TweakRegistrar {\n" +
         "\n";
 
     private static final String DECLARATION_HEADER =
