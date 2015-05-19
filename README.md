@@ -15,6 +15,10 @@ To use @Tweak, annotate a public method of a public class in your code like this
 import com.mixpanel.android.build.Tweak;
 
 public class MyGreatClass {
+    public MyGreatClass() {
+        mixpanel.registerForTweaks(this);
+    }
+
     @Tweak(name="greeting")
     public void setGreeting(String greeting) {
         ...
@@ -23,27 +27,7 @@ public class MyGreatClass {
 }
 ```
 
-Later, when you create an instance of `MyGreatClass`, register it with Mixpanel with
-
-```
-MyGreatClass great = new MyGreatClass();
-mixpanel.registerForTweaks(great);
-```
-
-Tweaks can be set on any public method that takes a single String, double, long, or boolean argument. You can set up defaults in your code using `@BooleanDefault`, `@DoubleDefault`, `@LongDefault`, or `@StringDefault`. For example
-
-```java
-import com.mixpanel.android.build.Tweak;
-import com.mixpanel.android.build.LongDefault;
-
-public class MyOtherGreatClass {
-    @Tweak(name="Number of Pages to Show")
-    @LongDefault(4)
-    public void setNumberOfPages(long pages) {
-        ...
-    }
-}
-```
+That's it!
 
 ### Building with Tweak Annotations
 
@@ -64,12 +48,40 @@ buildscript {
 
 ```
 
-Then, apply the Mixpanel annotations plugin to your project by adding the following line
-to your gradle file
+This adds the annotations compiler tools to the classpath that gradle
+will use when finding plugins and running it's own scripts. The
+buildscript dependencies are different from the dependencies of your
+app - they're for build time only.
+
+Then, apply the Mixpanel annotations plugin to your project by adding
+the following line to your gradle file
 
 ```groovy
 apply plugin: 'mixpanel-android-annotations'
 ```
 
-That's all you have to do! The mixpanel-android-annotations plugin will use your annotations and
-call your methods when new tweak values are received from the Mixpanel API.
+That's all you have to do! The mixpanel-android-annotations plugin
+will use your annotations and call your methods when new tweak values
+are received from the Mixpanel API.
+
+
+### Setting custom default values
+
+
+Tweaks can be set on any public method that takes a single String,
+double, long, or boolean argument. You can set up defaults in your
+code using `@BooleanDefault`, `@DoubleDefault`, `@LongDefault`, or
+`@StringDefault`. For example
+
+```java
+import com.mixpanel.android.build.Tweak;
+import com.mixpanel.android.build.LongDefault;
+
+public class MyOtherGreatClass {
+    @Tweak(name="Number of Pages to Show")
+    @LongDefault(4)
+    public void setNumberOfPages(long pages) {
+        ...
+    }
+}
+```
